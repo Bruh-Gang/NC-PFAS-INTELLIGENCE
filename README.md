@@ -1,90 +1,69 @@
-# NC-PFAS-INTELLIGENCE
+# NC PFAS Intelligence
 
+A geospatial PFAS ("forever chemical") risk tool for North Carolina, built for the Hack-Earth hackathon. Enter a ZIP code, get your local contamination risk level — Low, Medium, or High — based on real EPA and NC DEQ water sampling data.
 
-Environmental & Public Health Impact Why This Project Matters
+PFAS data is scattered, technical, and hard to act on. This tries to fix that.
 
-PFAS (“forever chemicals”) persist in the environment for decades, contaminate drinking water, bioaccumulate in humans and wildlife, and are linked to cancer, immune suppression, developmental harm, and endocrine disruption. Despite this, PFAS data is fragmented, technical, and inaccessible to the public.
+---
 
-This project transforms raw regulatory data into actionable environmental intelligence.
+## What it does
 
-Environmental Impact
+- Pulls from three public datasets: NC DEQ 2023 sampling data, NC DEQ 2022 PFOA/PFOS data, and EPA UCMR 5 national data
+- Cleans and merges everything into a unified county-level risk table
+- Applies EPA MCL thresholds (e.g. 4 ppt for PFOA/PFOS) to categorize risk as Low / Medium / High
+- Expands to ZIP code level and interpolates risk for ZIPs without direct data
+- Generates two maps: a county-level Plotly choropleth and a ZIP-level Folium interactive map
+- Runs a Streamlit dashboard with a personal ZIP scanner, compound analysis, and well safety info
 
-Increased Environmental Awareness
-By aggregating and visualizing PFAS contamination across North Carolina, the platform makes invisible chemical pollution visible. Counties and ZIP codes with elevated risk are clearly identified, helping communities understand their local environmental exposure.
+---
 
-Data-Driven Accountability
-The system integrates EPA UCMR 5 data and state-level sampling to highlight contamination patterns. This transparency encourages:
+## Data sources
 
-Stronger regulatory enforcement
+| Dataset | Source |
+|---|---|
+| NC DEQ 2023 PWS Sampling | [NC DEQ](https://www.deq.nc.gov) |
+| NC DEQ 2022 PFOA/PFOS Data | [NC DEQ](https://www.deq.nc.gov) |
+| EPA UCMR 5 | Included as `UCMR5_All_MA_WY.zip` |
 
-Public pressure for cleanup and remediation
+---
 
-Improved monitoring of industrial polluters
+## Setup
 
-Reduction of Long-Term Environmental Damage
-Early identification of high-risk areas supports faster intervention, reducing PFAS spread into groundwater, rivers, and ecosystems. Preventing further contamination lowers long-term ecological damage and cleanup costs.
+```bash
+pip install pandas tabula-py camelot-py[cv] plotly folium geopandas branca streamlit streamlit-folium requests jpype1
+```
 
-Sustainable, Low-Overhead Technology
-The platform is entirely data-driven and cloud-light:
+Unzip `UCMR5_All_MA_WY.zip` before running.
 
-No physical infrastructure
+---
 
-Minimal compute overhead
+## Run
 
-Open-source tooling This ensures environmental monitoring without additional environmental burden.
+```bash
+# In Colab or Jupyter — run nc_pfs.py top to bottom
+# Outputs: pfas_nc_clean.csv, pfas_nc_clean.json, pfas_nc_zip_clean.json, pfas_nc_zip_map.html
 
-Human & Community Benefits
+# To launch the dashboard locally:
+streamlit run dashboard.py
+```
 
-Public Health Protection
-Residents can instantly assess PFAS risk by ZIP code, removing the need to interpret dense regulatory reports. This empowers people to:
+> **Note:** The ngrok tunnel in the original notebook was for Colab demo purposes only. For local use, just run `streamlit run dashboard.py` directly.
 
-Avoid unsafe drinking water
+---
 
-Install appropriate filtration systems
+## MCL thresholds used
 
-Protect vulnerable populations (infants, pregnant individuals, immunocompromised people)
+| Compound | EPA Limit |
+|---|---|
+| PFOA | 4 ppt |
+| PFOS | 4 ppt |
+| GenX (HFPO-DA) | 10 ppt |
+| PFNA | 10 ppt |
+| PFHxS | 10 ppt |
+| PFBS | 2000 ppt |
 
-Equity & Environmental Justice
-PFAS contamination often disproportionately affects rural, low-income, and industrial-adjacent communities. By mapping risk at the ZIP level and interpolating missing data, the platform ensures no community is ignored due to lack of testing.
+---
 
-Actionable Guidance, Not Just Data
-Each risk level is paired with clear health guidance:
+## Stack
 
-What the risk means
-
-What actions to take immediately
-
-When to seek testing or alternative water sources
-
-This bridges the gap between science and real-world decision-making.
-
-Support for Policymakers & Researchers
-Cleaned datasets (CSV + JSON) and geospatial outputs can be reused by:
-
-Environmental researchers
-
-Journalists
-
-Local governments
-
-Advocacy organizations
-
-This accelerates research, reporting, and policy response.
-
-Technical Impact with Real-World Consequences
-
-Converts unstructured PDFs and raw EPA files into standardized datasets
-
-Normalizes PFAS measurements across years and sources
-
-Applies EPA MCL thresholds for risk classification
-
-Interpolates missing geographic data responsibly
-
-Delivers insights through interactive maps and a live dashboard
-
-The result: regulatory-grade analysis presented in a human-readable form.
-
-Bottom Line
-
-This project lowers the barrier between environmental data and human action. By turning complex PFAS contamination records into clear, localized risk intelligence, it helps protect public health, promotes environmental justice, and supports a cleaner, more informed future.
+`Python` · `pandas` · `geopandas` · `Plotly` · `Folium` · `Streamlit` · `tabula-py` · `LangChain` (for future semantic search layer)
